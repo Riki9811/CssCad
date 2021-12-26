@@ -1,0 +1,25 @@
+.error-404-container {
+	font-size: 1.2em;
+	padding: 10vh 5vw;
+
+	h1 {
+		font-size: 3.5em;
+		font-weight: 500;
+		margin-bottom: 0.5em;
+	}
+
+	.go-back-btn {
+		margin-top: 4em;
+		padding: 10px 50px;
+	}
+}
+
+@media only screen and (max-device-width: 812px) {
+	.error-404-container {
+		font-size: 1em;
+
+		h1 {
+			font-size: 1.3em;
+		}
+	}
+}
