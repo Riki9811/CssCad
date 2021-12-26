@@ -1,7 +1,7 @@
-import React from 'react';
-import './App.scss';
+import React from "react";
+import "./App.scss";
 
-function App() {
+export default function App() {
 	return (
 		<div className="App">
 			<header className="App-header">
@@ -15,5 +15,3 @@ function App() {
 		</div>
 	);
 }
-
-export default App;
