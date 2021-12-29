@@ -1,21 +1,21 @@
 .resizable-div {
-    position: relative;
+	position: relative;
 
-    > .resizer {
-        position: absolute;
-        top: 0;
-        width: 5px;
-        height: 100%;
-        cursor: e-resize;
-        background: transparent;
-        user-select: none;
-    }
+	> .resizer {
+		position: absolute;
+		top: 0;
+		width: 5px;
+		height: 100%;
+		cursor: e-resize;
+		background: transparent;
+		user-select: none;
+	}
 
-    > .left-resizer {
-        left: 0;
-    }
+	> .left-resizer {
+		left: 0;
+	}
 
-    > .right-resizer {
-        right: 0;
-    }
+	> .right-resizer {
+		right: 0;
+	}
 }

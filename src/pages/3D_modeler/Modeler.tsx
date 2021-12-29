@@ -6,6 +6,8 @@ import { Objects, ObjectsAction } from "../../utils/Types";
 import "./Modeler.scss";
 import Explorer from "../../components/explorer/Explorer";
 import ResizableDiv from "../../components/resizable-div/ResizableDiv";
+import Inspector from "../../components/inspector/Inspector";
+import Viewport from "../../components/viewport/Viewport";
 
 export default function Modeler() {
 	//#region OBJECT ARRAY
@@ -69,11 +71,11 @@ export default function Modeler() {
 			<ResizableDiv resizeFrom="right" className="explorer-container">
 				<Explorer objects={objects} objectsDispatch={objDispatch} />
 			</ResizableDiv>
-			<div>
-				<p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eveniet, pariatur?</p>
+			<div className="viewport-container">
+				<Viewport objects={objects} />
 			</div>
-			<ResizableDiv resizeFrom="left" className="explorer-container">
-				<Explorer objects={objects} objectsDispatch={objDispatch} />
+			<ResizableDiv resizeFrom="left" className="inspector-container">
+				<Inspector object={objects[0]} />
 			</ResizableDiv>
 			{/* <button onClick={() => objDispatch({ type: "addRnd" })}>Add +</button>
 			<button

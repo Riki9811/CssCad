@@ -1,11 +1,21 @@
 .modeler {
 	display: grid;
 	grid-template-columns: minmax(min-content, max-content) auto minmax(min-content, max-content);
-	grid-template-areas: "explorer vieport inspector";
+	grid-template-areas: "explorer viewport inspector";
 
-    > .explorer-container {
-        min-width: 15vw;
-        max-width: 45vw;
-    }
+	> .explorer-container {
+		grid-area: explorer;
+		min-width: 15vw;
+		max-width: 45vw;
+	}
+
+	> .viewport-container {
+		grid-area: viewport;
+	}
+
+	> .inspector-container {
+		grid-area: inspector;
+		min-width: 15vw;
+		max-width: 45vw;
+	}
 }
- 

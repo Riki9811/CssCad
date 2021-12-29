@@ -8,12 +8,10 @@ interface Props {
 }
 
 export default function Explorer(props: Props) {
-
-
-
 	return (
 		<div className="explorer">
-			Explorer {props.objects.length}
+			<h3>Explorer</h3>
+			<p>number of objects: {props.objects.length}</p>
 		</div>
 	);
 }
