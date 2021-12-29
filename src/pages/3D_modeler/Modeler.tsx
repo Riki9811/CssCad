@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import { SceneObject2D, SceneObject3D } from "../../utils/SceneObject";
 import { Color } from "../../utils/Colors";
 import { Vector3 } from "../../utils/Vectors";
@@ -10,6 +10,7 @@ import Inspector from "../../components/inspector/Inspector";
 import Viewport from "../../components/viewport/Viewport";
 
 export default function Modeler() {
+	//#region STATE
 	//#region OBJECT ARRAY
 	const [objects, objDispatch] = useReducer(objectsReducer, 20, objectsInit);
 
@@ -54,6 +55,8 @@ export default function Modeler() {
 		}
 	}
 	//#endregion
+	const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+	//#endregion
 
 	function generateRandomObj(n: number): SceneObject2D {
 		return {
@@ -65,17 +68,22 @@ export default function Modeler() {
 			color: Color.Random(),
 		};
 	}
+	function explorerSelect(n: number) {
+		if (n >= 0 && n < objects.length) {
+			setSelectedIndex(selectedIndex === n ? -1 : n);
+		}
+	}
 
 	return (
 		<div className="full-screen modeler">
 			<ResizableDiv resizeFrom="right" className="explorer-container">
-				<Explorer objects={objects} objectsDispatch={objDispatch} />
+				<Explorer objects={objects} objectsDispatch={objDispatch} selected={selectedIndex} select={explorerSelect} />
 			</ResizableDiv>
 			<div className="viewport-container">
 				<Viewport objects={objects} />
 			</div>
 			<ResizableDiv resizeFrom="left" className="inspector-container">
-				<Inspector object={objects[0]} />
+				<Inspector object={objects[selectedIndex]} />
 			</ResizableDiv>
 			{/* <button onClick={() => objDispatch({ type: "addRnd" })}>Add +</button>
 			<button

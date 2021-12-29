@@ -9,11 +9,11 @@ interface Props {
 export default function Viewport(props: Props) {
 	return (
 		<div className="viewport">
-            <h3>Viewport</h3>
-            <p>Objects to render:</p>
+			<h3>Viewport</h3>
+			<p>Objects to render:</p>
 			<ul>
 				{props.objects.map((elem) => (
-					<li>{elem.name}</li>
+					<li key={`list-item-${elem.name}`}>{elem.name}</li>
 				))}
 			</ul>
 		</div>

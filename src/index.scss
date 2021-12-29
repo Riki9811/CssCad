@@ -282,7 +282,7 @@ select:-webkit-autofill:active {
 }
 // #endregion
 
-// #region FLEX-CONTAINERS
+// #region CONTAINERS
 .full-screen {
 	width: 100vw;
 	height: 100vh;
@@ -319,5 +319,29 @@ select:-webkit-autofill:active {
 
 .align-center {
 	align-items: center;
+}
+
+.justify-center {
+	justify-content: center;
+}
+
+.justify-flex-start {
+	justify-content: flex-start;
+}
+
+.justify-flex-end {
+	justify-content: flex-end;
+}
+
+.justify-space-around {
+	justify-content: space-around;
+}
+
+.justify-space-between {
+	justify-content: space-between;
+}
+
+.justify-space-evenly {
+	justify-content: space-evenly;
 }
 // #endregion
