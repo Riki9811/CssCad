@@ -1,8 +1,11 @@
 .modeler {
+	display: grid;
+	grid-template-columns: minmax(min-content, max-content) auto minmax(min-content, max-content);
+	grid-template-areas: "explorer vieport inspector";
 
-    > button {
-        margin-left: 3em;
-        width: 5em;
+    > .explorer-container {
+        min-width: 15vw;
+        max-width: 45vw;
     }
-
 }
+ 
