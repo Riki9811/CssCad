@@ -11,11 +11,11 @@ export default function Viewport(props: Props) {
 		<div className="viewport">
 			<h3>Viewport</h3>
 			<p>Objects to render:</p>
-			<ul>
+			<div style={{ display: "grid", gridTemplateColumns: "repeat(8,1fr)", margin: "1em 4em" }}>
 				{props.objects.map((elem) => (
-					<li key={`list-item-${elem.name}`}>{elem.name}</li>
+					<p key={`list-item-${elem.name}`}>• {elem.name}</p>
 				))}
-			</ul>
+			</div>
 		</div>
 	);
 }

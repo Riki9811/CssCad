@@ -7,15 +7,18 @@
 		grid-area: explorer;
 		min-width: 15vw;
 		max-width: 45vw;
+		height: 100vh;
 	}
 
 	> .viewport-container {
 		grid-area: viewport;
+		height: 100vh;
 	}
 
 	> .inspector-container {
 		grid-area: inspector;
 		min-width: 15vw;
 		max-width: 45vw;
+		height: 100vh;
 	}
 }

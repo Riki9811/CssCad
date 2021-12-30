@@ -3,7 +3,7 @@ import { SceneObject2D, SceneObject3D } from "../../utils/SceneObject";
 import "./Inspector.scss";
 
 interface Props {
-	object: SceneObject2D | SceneObject3D;
+	object: SceneObject2D | SceneObject3D | undefined;
 	// TODO: Modify object method
 }
 

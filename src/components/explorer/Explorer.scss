@@ -5,25 +5,43 @@
 	height: 100%;
 	background-color: #0652996e;
 
-	> .object-list {
+	ul {
 		margin: 0;
 		padding: 0;
 		list-style: none;
+	}
 
-		> .object-list-item-selected {
-			background-color: #0026ff5d;
-		}
+	> .object-list-container {
+        margin: .5em 0 1em;
+		overflow-x: clip;
+		overflow-y: overlay;
 
-		> .object-list-item {
-			padding-left: 1em;
-			position: relative;
-            cursor: pointer;
-		}
+		> .object-list {
+			.object-list-item {
+				display: flex;
+				align-items: center;
+				gap: 0.2em;
+				cursor: pointer;
+				user-select: none;
 
-		> .object-list-item::before {
-			position: absolute;
-			left: 0;
-			content: "-";
+				> .object-list-indicator {
+					transform: scaleX(0.8);
+				}
+
+				> .object-list-expander,
+				> .object-list-indicator {
+					min-width: 1em;
+					min-height: 1em;
+				}
+			}
+
+			.sub-object-list {
+				padding-left: 1em;
+			}
+
+			.object-list-item-selected {
+				background-color: #0026ff5d;
+			}
 		}
 	}
 }
