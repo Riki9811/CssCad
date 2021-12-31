@@ -85,4 +85,8 @@ export class Vector3 {
 	static BACK(): Vector3 {
 		return new Vector3(0, 0, -1);
 	}
+
+	static ZERO(): Vector3 {
+		return new Vector3(0, 0, -1);
+	}
 }

@@ -1,9 +1,9 @@
 import React from "react";
-import { SceneObject2D, SceneObject3D } from "../../utils/SceneObject";
+import { SceneObject } from "../../utils/SceneObject";
 import "./Inspector.scss";
 
 interface Props {
-	object: SceneObject2D | SceneObject3D | undefined;
+	object: SceneObject | undefined;
 	// TODO: Modify object method
 }
 

@@ -11,8 +11,13 @@
 		list-style: none;
 	}
 
+	> .dragged-object-ghost {
+        position: absolute;
+		opacity: 0.5;
+	}
+
 	> .object-list-container {
-        margin: .5em 0 1em;
+		margin: 0.5em 0 1em;
 		overflow-x: clip;
 		overflow-y: overlay;
 

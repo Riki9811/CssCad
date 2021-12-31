@@ -1,22 +1,31 @@
 import React, { useState } from "react";
-import { SceneObject2D, SceneObject3D } from "../../utils/SceneObject";
 import { FaChevronDown, FaChevronRight, FaMinus } from "react-icons/fa";
-import { Objects, ObjectsAction } from "../../utils/Types";
+import { ObjectsAction } from "../../utils/Types";
+import { ObjectTree, SceneObject } from "../../utils/SceneObject";
 import "./Explorer.scss";
 
 interface Props {
-	objects: Objects;
+	objects: ObjectTree;
 	objectsDispatch: React.Dispatch<ObjectsAction>;
 	total: number;
-	selected: SceneObject2D | SceneObject3D | undefined;
-	select: (obj: SceneObject2D | SceneObject3D) => void;
+	selected: SceneObject | undefined;
+	select: (obj: SceneObject) => void;
 }
 
 export default function Explorer(props: Props) {
 	const { objects, objectsDispatch, total, selected, select } = props;
 
 	const [expandedObjNames, setExpandedObjNames] = useState<Array<string>>([]);
+	const [draggedObj, setDraggedObj] = useState<SceneObject>();
+	const [mouseX, setMouseX] = useState<number>(-1);
+	const [mouseY, setMouseY] = useState<number>(-1);
 
+	function trackMousePos(evt: MouseEvent) {
+		setMouseX(evt.clientX);
+		setMouseY(evt.clientY);
+	}
+
+	//#region RENDER FUNCTIONS
 	function renderHeader(): JSX.Element {
 		return (
 			<div className="flex-row align-center justify-space-between">
@@ -34,17 +43,11 @@ export default function Explorer(props: Props) {
 		);
 	}
 
-	function renderObjectListItem(obj: SceneObject2D | SceneObject3D): JSX.Element {
+	function renderObjectListItem(obj: SceneObject): JSX.Element {
 		let className: string;
 		let expanded: boolean = expandedObjNames.includes(obj.name);
 		if (selected && obj.name === selected.name) className = "object-list-item object-list-item-selected";
 		else className = "object-list-item";
-
-		let subList = (
-			<ul key={`sub-list-item-${obj.name}`} className="sub-object-list">
-				{obj.children.map((child) => renderObjectListItem(child))}
-			</ul>
-		);
 
 		return (
 			<React.Fragment key={`list-item-container-${obj.name}`}>
@@ -54,11 +57,29 @@ export default function Explorer(props: Props) {
 					onClick={() => {
 						select(obj);
 					}}
+					onMouseDown={(evt) => {
+						setDraggedObj(obj);
+						setMouseX(evt.clientX);
+						setMouseY(evt.clientY);
+						document.addEventListener("mousemove", trackMousePos);
+					}}
+                    onMouseUp={() => {
+                        if (draggedObj && draggedObj.name !== obj.name) {
+                            objectsDispatch({type: "moveInto", parentName: obj.name, newChild: draggedObj})
+                            setExpandedObjNames([...expandedObjNames, obj.name]);
+                        }
+                        setDraggedObj(undefined);
+                        document.removeEventListener("mousemove", trackMousePos);
+                    }}
 				>
 					{renderExpander(obj.name, obj.children.length > 0, expanded)}
 					{obj.name}
 				</li>
-				{expanded ? subList : null}
+				{expanded ? (
+					<ul key={`sub-list-item-${obj.name}`} className="sub-object-list">
+						{obj.children.map((child) => renderObjectListItem(child))}
+					</ul>
+				) : null}
 			</React.Fragment>
 		);
 	}
@@ -74,7 +95,10 @@ export default function Explorer(props: Props) {
 						evt.stopPropagation();
 						var index = expandedObjNames.indexOf(objName);
 						if (index !== -1) {
-							setExpandedObjNames([...expandedObjNames.slice(0, index), ...expandedObjNames.slice(index + 1)]);
+							setExpandedObjNames([
+								...expandedObjNames.slice(0, index),
+								...expandedObjNames.slice(index + 1),
+							]);
 						}
 					}}
 				/>
@@ -92,13 +116,24 @@ export default function Explorer(props: Props) {
 		}
 	}
 
+	function renderDraggedObjGhost() {
+		if (draggedObj)
+			return (
+				<div className="dragged-object-ghost" style={{ top: mouseY, left: mouseX + 20 }}>
+					{draggedObj.name}
+				</div>
+			);
+	}
+	//#endregion
+
 	return (
 		<div className="flex-column explorer">
 			<h3>Explorer</h3>
 			{renderHeader()}
 			<div className="object-list-container">
-				<ul className="object-list">{objects.map((obj) => renderObjectListItem(obj))}</ul>
+				<ul className="object-list">{objects.getObjectList().map((obj) => renderObjectListItem(obj))}</ul>
 			</div>
+			{renderDraggedObjGhost()}
 		</div>
 	);
 }
