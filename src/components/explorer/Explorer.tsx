@@ -51,7 +51,7 @@ export default function Explorer(props: Props) {
 		document.removeEventListener("mousemove", dragging);
 		document.removeEventListener("mouseup", documentMouseUp);
 		setDraggedObj(undefined);
-	}, []);
+	}, [dragging]);
 
 	//#region RENDER FUNCTIONS
 	function renderHeader(): JSX.Element {
