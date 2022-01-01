@@ -7,11 +7,11 @@ import Explorer from "../../components/explorer/Explorer";
 import ResizableDiv from "../../components/resizable_div/ResizableDiv";
 import Inspector from "../../components/inspector/Inspector";
 import Viewport from "../../components/viewport/Viewport";
-import { ObjectTree, SceneObject, SceneObject2D } from "../../utils/SceneObject";
+import { ObjectTree, SceneObject, SceneObject2D, SceneObject3D } from "../../utils/SceneObject";
 
 export default function Modeler() {
 	//#region STATE
-	const { objects, objDispatch } = useObjectReducer();
+	const { objects, objDispatch } = useObjectReducer(20);
 
 	const totalCount = useMemo((): number => {
 		return objects.getObjectCount();
@@ -46,21 +46,32 @@ export default function Modeler() {
 	);
 }
 
-function useObjectReducer() {
-	const [objects, objDispatch] = useReducer(objectsReducer, 20, objectsInit);
+function useObjectReducer(initialAmount: number) {
+	const [objects, objDispatch] = useReducer(objectsReducer, initialAmount, objectsInit);
 
 	function objectsInit(initialAmount: number): ObjectTree {
 		let newObjs: ObjectTree = new ObjectTree();
 
+		let previousElements: string[] = [];
+
 		for (let i = 0; i < initialAmount; i++) {
-			newObjs.insert(generateRandomObj());
+			let randomParent: string = "";
+			let newNode: string | undefined = "";
+			if (Math.random() < 0.7) {
+				randomParent = previousElements[Math.round(Math.random() * previousElements.length)];
+			}
+			if (randomParent) newNode = newObjs.insert(generateRandomObj(), randomParent);
+			else newNode = newObjs.insert(generateRandomObj());
+
+			if (newNode) previousElements.push(newNode);
+			else throw new Error("Error creating random objects");
 		}
 
 		return newObjs;
 	}
 
 	function objectsReducer(state: ObjectTree, action: ObjectsAction): ObjectTree {
-        let copy: ObjectTree = state.copy();
+		let copy: ObjectTree = state.copy();
 
 		switch (action.type) {
 			case "add":
@@ -81,12 +92,14 @@ function useObjectReducer() {
 			default:
 				throw new Error("Object array - ACTION ERROR: action type not found.");
 		}
-        
+
 		return copy;
 	}
 
-	function generateRandomObj(): SceneObject2D {
-		return new SceneObject2D(`Obj`, Vector3.Random(), Vector3.Random(), Color.Random(), 20, 10, []);
+	function generateRandomObj(): SceneObject2D | SceneObject3D {
+		if (Math.random() < 0.4)
+			return new SceneObject2D(`Obj`, Vector3.Random(), Vector3.Random(), Color.Random(), 20, 10, []);
+		return new SceneObject3D(`Obj`, Vector3.Random(), Vector3.Random(), Color.Random(), 20, 10, 10, []);
 	}
 
 	return { objects, objDispatch };

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { FaChevronDown, FaChevronRight, FaMinus } from "react-icons/fa";
+import React, { useCallback, useState } from "react";
+import { FaChevronDown, FaChevronRight, FaCube, FaRegSquare } from "react-icons/fa";
 import { ObjectsAction } from "../../utils/Types";
-import { ObjectTree, SceneObject } from "../../utils/SceneObject";
+import { ObjectTree, SceneObject, SceneObject2D } from "../../utils/SceneObject";
 import "./Explorer.scss";
 
 interface Props {
@@ -17,28 +17,78 @@ export default function Explorer(props: Props) {
 
 	const [expandedObjNames, setExpandedObjNames] = useState<Array<string>>([]);
 	const [draggedObj, setDraggedObj] = useState<SceneObject>();
-	const [mouseX, setMouseX] = useState<number>(-1);
-	const [mouseY, setMouseY] = useState<number>(-1);
+	const { startDrag, dragging, mouseX, mouseY } = useMouseDrag();
 
-	function trackMousePos(evt: MouseEvent) {
-		setMouseX(evt.clientX);
-		setMouseY(evt.clientY);
+	function listItemMouseDown(obj: SceneObject, evt: React.MouseEvent<HTMLLIElement, MouseEvent>) {
+		setDraggedObj(obj);
+		startDrag(evt);
+		document.addEventListener("mousemove", dragging);
+		document.addEventListener("mouseup", documentMouseUp);
 	}
+
+	function listItemMouseUp(obj: SceneObject, evt: React.MouseEvent<HTMLLIElement, MouseEvent>) {
+		if (draggedObj && draggedObj.name !== obj.name) {
+			objectsDispatch({ type: "moveInto", parentName: obj.name, newChild: draggedObj });
+			setExpandedObjNames([...expandedObjNames, obj.name]);
+		}
+		document.removeEventListener("mousemove", dragging);
+		document.removeEventListener("mouseup", documentMouseUp);
+		setDraggedObj(undefined);
+		evt.stopPropagation();
+	}
+
+	function objectListMouseUp(evt: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+		if (draggedObj) {
+			objectsDispatch({ type: "moveInto", newChild: draggedObj });
+			document.removeEventListener("mousemove", dragging);
+			document.removeEventListener("mouseup", documentMouseUp);
+			setDraggedObj(undefined);
+			evt.stopPropagation();
+		}
+	}
+
+	const documentMouseUp = useCallback(() => {
+		document.removeEventListener("mousemove", dragging);
+		document.removeEventListener("mouseup", documentMouseUp);
+		setDraggedObj(undefined);
+	}, []);
 
 	//#region RENDER FUNCTIONS
 	function renderHeader(): JSX.Element {
 		return (
-			<div className="flex-row align-center justify-space-between">
-				<p>
-					{total} object{total !== 1 ? "s" : ""} in total
-				</p>
-				<button
-					onClick={() => {
-						objectsDispatch({ type: "addRnd" });
-					}}
-				>
-					Add +
-				</button>
+			<div className="flex-column">
+				<div className="flex-row align-center justify-space-between">
+					<p>
+						{total} object{total !== 1 ? "s" : ""} in total
+					</p>
+					<button
+						onClick={() => {
+							objectsDispatch({ type: "addRnd" });
+						}}
+					>
+						Add +
+					</button>
+				</div>
+				<div className="flex-row align-center justify-space-between">
+					<button
+						onClick={() => {
+							let newExpanded = [];
+							for (const obj of objects.preOrderTraversal()) {
+								newExpanded.push(obj.name);
+							}
+							setExpandedObjNames(newExpanded);
+						}}
+					>
+						Expand all
+					</button>
+					<button
+						onClick={() => {
+							setExpandedObjNames([]);
+						}}
+					>
+						Collapse all
+					</button>
+				</div>
 			</div>
 		);
 	}
@@ -54,40 +104,39 @@ export default function Explorer(props: Props) {
 				<li
 					key={`list-item-${obj.name}`}
 					className={className}
-					onClick={() => {
-						select(obj);
-					}}
-					onMouseDown={(evt) => {
-						setDraggedObj(obj);
-						setMouseX(evt.clientX);
-						setMouseY(evt.clientY);
-						document.addEventListener("mousemove", trackMousePos);
-					}}
-                    onMouseUp={() => {
-                        if (draggedObj && draggedObj.name !== obj.name) {
-                            objectsDispatch({type: "moveInto", parentName: obj.name, newChild: draggedObj})
-                            setExpandedObjNames([...expandedObjNames, obj.name]);
-                        }
-                        setDraggedObj(undefined);
-                        document.removeEventListener("mousemove", trackMousePos);
-                    }}
+					onClick={() => select(obj)}
+					onMouseDown={(evt) => listItemMouseDown(obj, evt)}
+					onMouseUp={(evt) => listItemMouseUp(obj, evt)}
 				>
-					{renderExpander(obj.name, obj.children.length > 0, expanded)}
+					{obj.children.length > 0 ? (
+						renderExpander(obj.name, expanded)
+					) : (
+						<div className="object-list-spacer" />
+					)}
+					{renderObjectIcon(obj instanceof SceneObject2D)}
 					{obj.name}
 				</li>
-				{expanded ? (
-					<ul key={`sub-list-item-${obj.name}`} className="sub-object-list">
-						{obj.children.map((child) => renderObjectListItem(child))}
-					</ul>
-				) : null}
+				{renderListItemChildren(expanded, obj)}
 			</React.Fragment>
 		);
 	}
 
-	function renderExpander(objName: string, canExpand: boolean, expanded: boolean) {
-		if (!canExpand) {
-			return <FaMinus className="object-list-indicator" />;
-		} else if (expanded) {
+	function renderListItemChildren(expanded: boolean, obj: SceneObject) {
+		if (expanded) {
+			return (
+				<ul key={`sub-list-item-${obj.name}`} className="sub-object-list">
+					{obj.children.map((child, index) => renderObjectListItem(child))}
+				</ul>
+			);
+		}
+	}
+
+	function renderObjectIcon(is2D: boolean) {
+		return is2D ? <FaRegSquare className="object-list-icon" /> : <FaCube className="object-list-icon" />;
+	}
+
+	function renderExpander(objName: string, expanded: boolean) {
+		if (expanded) {
 			return (
 				<FaChevronDown
 					className="object-list-expander"
@@ -130,10 +179,27 @@ export default function Explorer(props: Props) {
 		<div className="flex-column explorer">
 			<h3>Explorer</h3>
 			{renderHeader()}
-			<div className="object-list-container">
+			<div className="object-list-container" onMouseUp={objectListMouseUp}>
 				<ul className="object-list">{objects.getObjectList().map((obj) => renderObjectListItem(obj))}</ul>
 			</div>
 			{renderDraggedObjGhost()}
 		</div>
 	);
+}
+
+function useMouseDrag() {
+	const [mouseX, setMouseX] = useState<number>(-1);
+	const [mouseY, setMouseY] = useState<number>(-1);
+
+	const dragging = useCallback((evt: MouseEvent) => {
+		setMouseX(evt.clientX);
+		setMouseY(evt.clientY);
+	}, []);
+
+	const startDrag = useCallback((evt: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+		setMouseX(evt.clientX);
+		setMouseY(evt.clientY);
+	}, []);
+
+	return { startDrag, dragging, mouseX, mouseY };
 }

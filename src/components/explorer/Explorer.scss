@@ -12,7 +12,7 @@
 	}
 
 	> .dragged-object-ghost {
-        position: absolute;
+		position: absolute;
 		opacity: 0.5;
 	}
 
@@ -20,28 +20,36 @@
 		margin: 0.5em 0 1em;
 		overflow-x: clip;
 		overflow-y: overlay;
+        flex-grow: 1;
 
 		> .object-list {
 			.object-list-item {
 				display: flex;
 				align-items: center;
-				gap: 0.2em;
 				cursor: pointer;
 				user-select: none;
-
-				> .object-list-indicator {
-					transform: scaleX(0.8);
-				}
+				line-height: 1.5em;
 
 				> .object-list-expander,
-				> .object-list-indicator {
-					min-width: 1em;
-					min-height: 1em;
+				> .object-list-spacer,
+				> .object-list-icon {
+					width: 1em;
+					height: 1em;
+				}
+
+                > .object-list-icon {
+					width: 1em;
+					height: 1em;
+					margin-right: 0.2em;
+				}
+
+				> .object-list-expander {
+					padding-right: 0.1em;
 				}
 			}
 
 			.sub-object-list {
-				padding-left: 1em;
+				padding-left: 1.1em;
 			}
 
 			.object-list-item-selected {

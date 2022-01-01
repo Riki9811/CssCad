@@ -5,4 +5,4 @@ export type ObjectsAction =
 	| { type: "addRnd" }
 	| { type: "remove"; name: string }
 	| { type: "reset"; initialAmount: number }
-	| { type: "moveInto"; parentName: string; newChild: SceneObject };
+	| { type: "moveInto"; parentName?: string; newChild: SceneObject };
